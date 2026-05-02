@@ -121,11 +121,26 @@
     reveals.forEach((el) => io.observe(el));
   }
 
-  // Assemble obfuscated mailto links from data attributes (light spam-bot mitigation).
+  // Obfuscated mailto links from data attributes. Address is only assembled at
+  // click time so it never appears in the DOM, tooltips, or the browser's
+  // status bar on hover.
   document.querySelectorAll('a[data-u][data-d]').forEach((el) => {
-    const addr = `${el.dataset.u}@${el.dataset.d}`;
-    el.href = `mailto:${addr}`;
-    el.setAttribute('title', addr);
+    el.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.location.href = `mailto:${el.dataset.u}@${el.dataset.d}`;
+    });
+  });
+
+  // Same idea for the LinkedIn link: assemble the URL only on click.
+  document.querySelectorAll('a[data-li]').forEach((el) => {
+    el.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.open(
+        `https://www.linkedin.com/in/${el.dataset.li}/`,
+        '_blank',
+        'noopener,noreferrer'
+      );
+    });
   });
 
   const year = document.getElementById('year');
